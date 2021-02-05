@@ -1,0 +1,10 @@
+name: route-mapper
+title:
+username:
+account: datatrek
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3471165
+bundleId: 4092766
+url: https://datatrek.shinyapps.io/route-mapper/
+when: 1610577118.5797
