@@ -4,6 +4,10 @@ library(dplyr)
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
+library(sf)
+library(raster)
+
+
 
 #### server
 server <- function(input, output, session) {
@@ -47,19 +51,42 @@ server <- function(input, output, session) {
       lat_long$originLocationDFhead <- head(lat_long$originLocationDF, 2)
       
       updateTextInput(session, "startingAddress", value = paste(round(lat_long$originLocationDFhead[1, 1], 2), 
-                                                                round(lat_long$originLocationDFhead[1,2], 2), sep = ", "))
+                                                                round(lat_long$originLocationDFhead[1, 2], 2), sep = ", "))
       
       if(nrow(lat_long$originLocationDF) != 1){
         updateTextInput(session, "endingAddress", value = paste(round(lat_long$originLocationDFhead[2, 1], 2), 
-                                                                round(lat_long$originLocationDFhead[2,2], 2), sep = ", "))
-      }
+                                                                round(lat_long$originLocationDFhead[2, 2], 2), sep = ", "))
+        
+        
+
+        }
       
       
       
       #update google map view and add markers
-      if(nrow(lat_long$originLocationDF) <= 2 ){
+      if(nrow(lat_long$originLocationDF) < 2 ){
+        
         google_map_update(map_id="map", data = lat_long$originLocationDFnew) %>%
           add_markers(update_map_view = FALSE)
+        
+      } else if (nrow(lat_long$originLocationDF) == 2 ) {
+        
+        
+        directions <- google_directions(origin = c(lat_long$originLocationDFhead[1, 1], lat_long$originLocationDFhead[1, 2]),
+                                        destination = c(lat_long$originLocationDFhead[2, 1], lat_long$originLocationDFhead[2, 2]),
+                                        mode = "walking",
+                                        key = api_key)
+        
+        pl <- direction_polyline(directions)
+        
+        route <- decode_pl(pl)
+        
+        sf_polyline <- sf_linstring(route, x = "lat", y = "long")
+        
+        google_map_update(map_id="map", data = lat_long$originLocationDFnew) %>%
+          add_markers(update_map_view = FALSE) %>%
+          add_polylines(data = route, lat = "lat", lon = "lon")
+        
       }
       
     }
