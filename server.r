@@ -81,7 +81,7 @@ server <- function(input, output, session) {
         
         route <- decode_pl(pl)
         
-        sf_polyline <- sf_linstring(route, x = "lat", y = "long")
+        #sf_polyline <- sf_linstring(route, x = "lat", y = "long")
         
         google_map_update(map_id="map", data = lat_long$originLocationDFnew) %>%
           add_markers(update_map_view = FALSE) %>%
